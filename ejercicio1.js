@@ -28,22 +28,49 @@ function formatInfo(info) {
 
   miData.forEach(e => {
     if (e.includes('=')){
-      let nombre = e.split(/\=/)[0]
-      console.log(nombre)
+      let nombre = e.match(/[^\=]+/)[0]
+      let parentesis = e.match(obteinParhentesis)
+      let precio1 = e.split(/\=/)[1]
+      
+      console.log({
+        nombre,
+        valoracion: parentesis,
+        precio: obtenerPrecio(precio1)
+      })
     }
     if (e.includes(':')) {
-      let nombre = e.split(/\:/)[0]
-      console.log(nombre)
+      let nombre = e.match(/[^\:]+/)[0]
+      let parentesis = e.match(obteinParhentesis)
+      let precio1 = e.split(/\:/)[1]
+      console.log({
+        nombre,
+        valoracion: parentesis,
+        precio: obtenerPrecio(precio1)
+      })
 
     }
     if (e.includes('->')) {
-      let nombre = e.split(/\->/)[0]
-      console.log(nombre)
+      let nombre = e.match(/[^\->]+/)[0]
+      let parentesis = e.match(obteinParhentesis)
+      let precio1 = e.split(/\->/)[1]
+
+      console.log({
+        nombre,
+        valoracion: parentesis,
+        precio: obtenerPrecio(precio1)
+      })
     }
   })
 
 }
 
+let obtenerPrecio = (data) => {
+  if(data.match(obteinPrice)){
+    return data.match(obteinPrice)[0]
+  }else{
+    return data.split(obteinParhentesis).toString().trim()
+  }
+}
 
 fs.readFile('info.txt', 'utf8', (err, data) => {
   if (err) {

@@ -19,6 +19,8 @@ const fs = require('node:fs');
 
 let obteinParhentesis = new RegExp(/\([^\)]+\)/g)
 let obteinPrice = new RegExp(/\$[(0-9.)]+/g)
+let obteinCurrency = new RegExp(/(\$|\¥|\us|\£)+/g)
+
 let obteinPriceNotSymbol = new RegExp(/[(0-9.)]+/)
 let obteinName = new RegExp(/\([^\)]+\)/g)
 
@@ -29,45 +31,56 @@ function formatInfo(info) {
   miData.forEach(e => {
     if (e.includes('=')){
       let nombre = e.match(/[^\=]+/)[0]
-      let parentesis = e.match(obteinParhentesis)
+      let parentesis = e.match(obteinParhentesis) ? e.match(obteinParhentesis)[0] : 'No tiene valoracion'
       let precio1 = e.split(/\=/)[1]
       
       console.log({
         nombre,
         valoracion: parentesis,
-        precio: obtenerPrecio(precio1)
+        precio: obtenerPrecio(precio1),
+        tipoMoneda: obtenerMoneda(precio1)
       })
     }
     if (e.includes(':')) {
       let nombre = e.match(/[^\:]+/)[0]
-      let parentesis = e.match(obteinParhentesis)
+      let parentesis = e.match(obteinParhentesis) ? e.match(obteinParhentesis)[0] : 'No tiene valoracion'
       let precio1 = e.split(/\:/)[1]
       console.log({
         nombre,
         valoracion: parentesis,
-        precio: obtenerPrecio(precio1)
+        precio: obtenerPrecio(precio1),
+        tipoMoneda: obtenerMoneda(precio1)
       })
 
     }
     if (e.includes('->')) {
       let nombre = e.match(/[^\->]+/)[0]
-      let parentesis = e.match(obteinParhentesis)
+      let parentesis = e.match(obteinParhentesis) ? e.match(obteinParhentesis)[0] : 'No tiene valoracion'
       let precio1 = e.split(/\->/)[1]
 
       console.log({
         nombre,
         valoracion: parentesis,
-        precio: obtenerPrecio(precio1)
+        precio: obtenerPrecio(precio1),
+        tipoMoneda: obtenerMoneda(precio1)
       })
     }
   })
 
 }
+let obtenerMoneda = (data) => {
+  return data.match(obteinCurrency) ? data.match(obteinCurrency)[0] : 'No tiene tipo de moneda' 
+}
 
 let obtenerPrecio = (data) => {
   if(data.match(obteinPrice)){
+    //Esta linea pasa el nivel 2
     return data.match(obteinPrice)[0]
-  }else{
+    
+  }else if(data.match(obteinCurrency)){
+    return data.match(/(\$|\¥|\us|\£)[0-9].+/)[0]
+  }
+  else{
     return data.split(obteinParhentesis).toString().trim()
   }
 }

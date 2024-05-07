@@ -25,16 +25,20 @@ let obteinPriceNotSymbol = new RegExp(/[(0-9.)]+/)
 let obteinName = new RegExp(/\([^\)]+\)/g)
 
 function formatInfo(info) {
+  let productosName = []
   let productos = []
-  let miData = info.split(/\n/)
 
+  let miData = info.split(/\n/)
   miData.forEach(e => {
     if (e.includes('=')){
       let nombre = e.match(/[^\=]+/)[0]
       let parentesis = e.match(obteinParhentesis) ? e.match(obteinParhentesis)[0] : 'No tiene valoracion'
       let precio1 = e.split(/\=/)[1]
-      
-      console.log({
+
+      //Esta linea tendria que superar el adicional
+      productosName.push(obtenerMarca(nombre))
+
+      productos.push({
         nombre,
         valoracion: parentesis,
         precio: obtenerPrecio(precio1),
@@ -45,7 +49,10 @@ function formatInfo(info) {
       let nombre = e.match(/[^\:]+/)[0]
       let parentesis = e.match(obteinParhentesis) ? e.match(obteinParhentesis)[0] : 'No tiene valoracion'
       let precio1 = e.split(/\:/)[1]
-      console.log({
+
+      
+      productosName.push(obtenerMarca(nombre))
+      productos.push({
         nombre,
         valoracion: parentesis,
         precio: obtenerPrecio(precio1),
@@ -58,7 +65,8 @@ function formatInfo(info) {
       let parentesis = e.match(obteinParhentesis) ? e.match(obteinParhentesis)[0] : 'No tiene valoracion'
       let precio1 = e.split(/\->/)[1]
 
-      console.log({
+      productosName.push(obtenerMarca(nombre))
+      productos.push({
         nombre,
         valoracion: parentesis,
         precio: obtenerPrecio(precio1),
@@ -67,7 +75,37 @@ function formatInfo(info) {
     }
   })
 
+  let productosFormateados = {}
+
+  let namesNoRepetidos = [...new Set(productosName)]
+
+  namesNoRepetidos.forEach(name => {
+    productosFormateados[name] = []
+  })
+
+  productos.forEach(producto => {
+    let marca = obtenerMarca(producto.nombre)
+    if(producto.nombre.toLowerCase().includes(marca)){
+      productosFormateados[marca].push(producto)
+    }else{
+      productosFormateados[marca].push(producto)
+    }
+  })
+
+  console.log(productosFormateados)
 }
+
+let obtenerMarca = (nombre) => {
+  if(nombre.includes('marca')){
+    let index = nombre.indexOf('marca')
+    let formatNombre = nombre.slice(index+ 5).trim('')
+
+    return formatNombre.toLowerCase()
+  }else{
+    return 'Sin Marca Especificada'
+  }
+}
+
 let obtenerMoneda = (data) => {
   return data.match(obteinCurrency) ? data.match(obteinCurrency)[0] : 'No tiene tipo de moneda' 
 }
@@ -76,9 +114,8 @@ let obtenerPrecio = (data) => {
   if(data.match(obteinPrice)){
     //Esta linea pasa el nivel 2
     return data.match(obteinPrice)[0]
-    
   }else if(data.match(obteinCurrency)){
-    return data.match(/(\$|\¥|\us|\£)[0-9].+/)[0]
+    return data.match(/(\$|\¥|\us|\£|\€)[0-9].+/) ? data.match(/(\$|\¥|\us|\£|\€)[0-9].+/)[0]: 'nulo'
   }
   else{
     return data.split(obteinParhentesis).toString().trim()

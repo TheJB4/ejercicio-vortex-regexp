@@ -21,8 +21,6 @@ let obteinParhentesis = new RegExp(/\([^\)]+\)/g)
 let obteinPrice = new RegExp(/\$[(0-9.)]+/g)
 let obteinCurrency = new RegExp(/(\$|\¥|\us|\£)+/g)
 
-let obteinPriceNotSymbol = new RegExp(/[(0-9.)]+/)
-let obteinName = new RegExp(/\([^\)]+\)/g)
 
 function formatInfo(info) {
   let productosName = []

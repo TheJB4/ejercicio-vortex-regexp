@@ -1,0 +1,1 @@
+El proyecto requiere en la carpeta raiz un archivo llamado "info.txt" que contiene todo los inputs
